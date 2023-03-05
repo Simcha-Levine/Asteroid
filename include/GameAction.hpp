@@ -3,7 +3,7 @@
 
 #include "Scene.hpp"
 #include <SFML/Graphics.hpp>
-#include <box2d/box2d.h>
+#include<box2d/box2d.h>
 // #include "Entity.hpp"
 #include "Player.hpp"
 #include "Astroid.hpp"
@@ -31,7 +31,9 @@ private:
     int score = 0;
 
 public:
-    GameAction(Scenes *scene);
+    bool pause = false;
+
+    GameAction(Scenes *scene, sf::Vector2u winSize);
 
     void restart();
 
@@ -39,7 +41,7 @@ public:
 
     void checkForDead(std::vector<size_t> dead);
 
-    void draw(sf::RenderWindow &render) override;
+    void draw(sf::RenderTexture &render) override;
 
     void spawnAstroids();
 };

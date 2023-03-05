@@ -8,7 +8,7 @@ int corners = 8;
 Astroid::Astroid(int scale, float radius, b2Vec2 pos, int breakingStage, b2World &world, sf::View &view, SoundMaker &sounds)
     : scale(scale),
       radius(radius),
-      vertexArray(sf::LinesStrip, corners + 1),
+      vertexArray(sf::LineStrip, corners + 1),
       world(world),
       body(createBody(pos)),
       view(view),
@@ -19,14 +19,14 @@ Astroid::Astroid(int scale, float radius, b2Vec2 pos, int breakingStage, b2World
 
     generateShape();
     createShape();
-    // texture.loadFromFile("assets/asteroid3.png");
-    for (int i = 0; i < corners + 1; i++)
+    int j = 0;
+    for (int i = 0; i < (corners + 1); i += 1)
     {
-        sf::Vector2f vec = toSfmlVec(shape[i], scale);
+        sf::Vector2f vec = toSfmlVec(shape[j], scale);
         vertexArray[i].position = vec;
-        // vec.x += radius * scale;
-        // vec.y += radius * scale;
-        // vertexArray[i].texCoords = vec;
+        // vec = toSfmlVec(shape[j] - b2Vec2(shape[j].x * 0.05f, shape[j].y * 0.05f), scale);
+        // vertexArray[i + 1].position = vec;
+        j++;
     }
 
     name = "astroid";
@@ -48,7 +48,6 @@ Astroid::~Astroid()
 
 void Astroid::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
-
     states.transform *= getTransform();
     states.texture = &texture;
     target.draw(vertexArray, states);
@@ -56,7 +55,6 @@ void Astroid::draw(sf::RenderTarget &target, sf::RenderStates states) const
 
 void Astroid::update(sf::Time deltaTime)
 {
-
     dealWithCollsion();
     syncPhisics();
 }
@@ -159,7 +157,6 @@ void Astroid::dealWithCollsion()
 
 bool Astroid::dealWithEdge(std::string contact)
 {
-
     if (contact == "barrierTop")
     {
         b2Vec2 v = toBox2dVec(sf::Vector2f(body->GetPosition().x, view.getSize().y / 2), scale);

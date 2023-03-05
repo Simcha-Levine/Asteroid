@@ -19,7 +19,7 @@ struct hsv
 rgb hsv2rgb(hsv in);
 
 UiStats::UiStats()
-    : lifeBar(sf::Vector2f(length, thickness)),
+    : lifeBar(sf::Vector2f(firstLength, thickness)),
       view(sf::FloatRect(0, 0, 1700, 900))
 {
     lifeBar.setPosition(20.f, 20.f);
@@ -29,14 +29,21 @@ UiStats::UiStats()
 
     font.loadFromFile("assets/HALO____.TTF");
     text.setFont(font);
-    text.setPosition(sf::Vector2f(length + 50.f, 10.f));
+    text.setPosition(sf::Vector2f(firstLength + 50.f, 10.f));
     text.setCharacterSize(50);
+    text.setColor(sf::Color(250.f, 255.f, 255.f));
 }
 
 void UiStats::update(float fraction, int score)
 {
-    lifeBar.setSize(sf::Vector2f(length * fraction, thickness));
-    hsv hsvColor{80.f * fraction, 1.f, 1.f};
+    currentLength = firstLength * fraction;
+    if ((stepingLength - step) >= currentLength)
+    {
+        stepingLength -= step;
+    }
+
+    lifeBar.setSize(sf::Vector2f(stepingLength, thickness));
+    hsv hsvColor{80.f * (stepingLength / firstLength), 1.f, 1.f};
     rgb rgbColor = hsv2rgb(hsvColor);
     lifeBar.setFillColor(sf::Color(rgbColor.r * 255, rgbColor.g * 255, rgbColor.b * 255));
 
@@ -48,6 +55,12 @@ void UiStats::draw(sf::RenderTarget &target, sf::RenderStates) const
     target.setView(view);
     target.draw(lifeBar);
     target.draw(text);
+}
+
+void UiStats::restart()
+{
+    currentLength = 400.f;
+    stepingLength = 400.f;
 }
 
 rgb hsv2rgb(hsv in)

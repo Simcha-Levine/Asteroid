@@ -1,11 +1,21 @@
 #include "Game.hpp"
 #include <iostream>
 
-Game::Game() : window(sf::VideoMode(1700, 900), "Astroid"), gameAction(&currentScene)
+Game::Game()
+    : window(sf::VideoMode(1700, 900), "Astroid", sf::Style::Fullscreen),
+      gameAction(&currentScene, window.getSize())
 {
-    // window.setPosition(sf::Vector2i(800, 100));
     window.setVerticalSyncEnabled(true);
     currentScene = Scenes::GAME_ACTION;
+
+    texture.create(window.getSize().x, window.getSize().y);
+
+    if (!frag.loadFromFile("assets/screen.frag", sf::Shader::Fragment))
+    {
+        std::cout << "arrrrrrrrrrr\n";
+    }
+    frag.setUniform("texture", sf::Shader::CurrentTexture);
+    frag.setUniform("u_resolution", sf::Glsl::Vec2{window.getSize()});
 }
 
 void Game::run()
@@ -18,10 +28,17 @@ void Game::run()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
+
+            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Q)
+                window.close();
+
+            if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::P)
+            {
+                gameAction.pause = !gameAction.pause;
+            }
         }
 
         update(clock.getElapsedTime());
-        // std::cout << clock.restart().asMilliseconds() << '\n';
         clock.restart();
         draw();
     }
@@ -29,32 +46,14 @@ void Game::run()
 
 void Game::update(sf::Time deltaTime)
 {
-    switch (currentScene)
-    {
-    case Scenes::GAME_ACTION:
-        gameAction.update(deltaTime);
-        break;
 
-        // case Scenes::MENU:
-        //     gameAction.update(deltaTime);
-        //     break;
-    default:
-        break;
-    }
+    gameAction.update(deltaTime);
+    gameAction.draw(texture);
 }
 
 void Game::draw()
 {
-    switch (currentScene)
-    {
-    case Scenes::GAME_ACTION:
-        gameAction.draw(window);
-        break;
-
-        // case Scenes::MENU:
-        //     gameAction.update(deltaTime);
-        //     break;
-    default:
-        break;
-    }
+    sprite.setTexture(texture.getTexture());
+    window.draw(sprite, &frag);
+    window.display();
 }

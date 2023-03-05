@@ -2,7 +2,7 @@
 #define BARRIER
 
 #include "Detectable.hpp"
-#include <box2d/box2d.h>
+#include<box2d/box2d.h>
 
 class Barrier : public Detectable
 {

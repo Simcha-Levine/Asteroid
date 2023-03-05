@@ -8,11 +8,12 @@
 
 b2Vec2 getRandomPos(b2Vec2 size);
 
-GameAction::GameAction(Scenes *scene) : view(sf::FloatRect(0, 0, 4000, -1900)),
-                                        b2_world(b2Vec2(0, 0)),
-                                        astroids(),
-                                        player(scale, b2Vec2(0, 0), b2_world, view, sounds),
-                                        listener()
+GameAction::GameAction(Scenes *scene, sf::Vector2u winSize)
+    : view(sf::FloatRect(0, 0, winSize.x * 2.f, winSize.y * 2.f * -1.f)),
+      b2_world(b2Vec2(0, 0)),
+      astroids(),
+      player(scale, b2Vec2(0, 0), b2_world, view, sounds),
+      listener()
 {
     srand(time(nullptr));
 
@@ -49,6 +50,8 @@ void GameAction::restart()
 
     astroidAmount = startingAmount;
     spawnAstroids();
+
+    stats.restart();
 }
 
 b2Vec2 getRandomPos(b2Vec2 size)
@@ -60,6 +63,11 @@ b2Vec2 getRandomPos(b2Vec2 size)
 
 void GameAction::update(sf::Time deltaTime)
 {
+    if (pause)
+    {
+        return;
+    }
+
     player.update(deltaTime);
 
     std::vector<size_t> dead;
@@ -124,8 +132,9 @@ void GameAction::checkForDead(std::vector<size_t> dead)
                                                astroid->breakingStage - 1,
                                                b2_world, view, sounds));
                 b2Vec2 v = astroid->body->GetLinearVelocity();
-                v.x *= 1.2 * cos(j * M_PI * 0.3);
-                v.y *= 1.2 * sin(j * M_PI * 0.3);
+                int a = rand();
+                v.x *= 2.2f * cos(a);
+                v.y *= 2.2f * sin(a);
                 astroids.back()->body->SetLinearVelocity(v);
             }
         }
@@ -135,7 +144,7 @@ void GameAction::checkForDead(std::vector<size_t> dead)
     }
 }
 
-void GameAction::draw(sf::RenderWindow &render)
+void GameAction::draw(sf::RenderTexture &render)
 {
     render.setView(view);
 

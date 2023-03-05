@@ -3,13 +3,15 @@
 
 #include <SFML/Graphics.hpp>
 #include <GameAction.hpp>
-// #include "Scenes.hpp"
 class Game
 {
 private:
     sf::RenderWindow window;
+    sf::RenderTexture texture;
     GameAction gameAction;
     Scenes currentScene;
+    sf::Shader frag;
+    sf::Sprite sprite;
 
 public:
     Game();
